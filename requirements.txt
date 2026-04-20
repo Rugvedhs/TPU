@@ -1,0 +1,7 @@
+torch>=2.2
+numpy>=1.26
+pandas>=2.2
+matplotlib>=3.8
+psutil>=5.9
+transformers>=4.40
+jupyter>=1.0
