@@ -105,7 +105,12 @@ def save_policy(
 
 
 def load_policy(path: str | Path, device: str = "cpu") -> tuple[PlacementMLP, dict[str, np.ndarray], list[str], dict[str, Any]]:
-    payload = torch.load(Path(path), map_location=device)
+    load_kwargs = {"map_location": device}
+    try:
+        # PyTorch 2.6+ defaults to weights_only=True, which rejects our metadata-rich checkpoints.
+        payload = torch.load(Path(path), weights_only=False, **load_kwargs)
+    except TypeError:
+        payload = torch.load(Path(path), **load_kwargs)
     feature_columns = list(payload["feature_columns"])
     hidden_dim = int(payload.get("hidden_dim", 64))
     model = PlacementMLP(input_dim=len(feature_columns), hidden_dim=hidden_dim)
